@@ -14,7 +14,7 @@ class DroneNode :SCNNode {
     
     var droneNode :SCNNode
     
-    private var velocity = 13
+    private var velocity = 10
     
     init(node: SCNNode) {
         
@@ -44,10 +44,10 @@ class DroneNode :SCNNode {
     
     func turn(orientation: Float) {
         if orientation > 0 {
-            self.physicsBody?.applyTorque(SCNVector4(0,orientation+5,0,1.0), asImpulse: false)
+            self.physicsBody?.applyTorque(SCNVector4(0,10,0,1), asImpulse: false)
             
         }else{
-            self.physicsBody?.applyTorque(SCNVector4(0,orientation+5,0,-1.0), asImpulse: false)
+            self.physicsBody?.applyTorque(SCNVector4(0,10,0,-1), asImpulse: false)
         }
     }
     
@@ -61,9 +61,9 @@ class DroneNode :SCNNode {
     }
     
     private func applyForce(forceY : Int, forceZ : Int) {
-        let force = simd_make_float4(0,Float(forceY), Float(forceZ) , 0)
-        let transform = self.droneNode.presentation.simdTransform
-        let rotatedForce = simd_mul(transform, force)
+        
+        let force = simd_make_float4(0,Float(forceY),Float(forceZ),0)
+        let rotatedForce = simd_mul(self.presentation.simdTransform, force)
         let vectorForce = SCNVector3(rotatedForce.x, rotatedForce.y, rotatedForce.z)
         self.physicsBody?.applyForce(vectorForce, asImpulse: false)
     }
