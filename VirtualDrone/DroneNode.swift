@@ -44,17 +44,12 @@ class DroneNode :SCNNode {
     
     func turn(orientation: Float) {
         if orientation > 0 {
-            self.physicsBody?.applyTorque(SCNVector4(0,10,0,1), asImpulse: false)
+            self.physicsBody?.applyTorque(SCNVector4(0,orientation*17,0,1), asImpulse: false)
             
         }else{
-            self.physicsBody?.applyTorque(SCNVector4(0,10,0,-1), asImpulse: false)
+            self.physicsBody?.applyTorque(SCNVector4(0,orientation*17,0,1), asImpulse: false)
         }
     }
-    
-    /*
-     func turnLeft() {
-     self.physicsBody?.applyTorque(SCNVector4(0,1.0,0,1.0), asImpulse: false)
-     }*/
     
     func stop() {
         self.physicsBody?.clearAllForces()

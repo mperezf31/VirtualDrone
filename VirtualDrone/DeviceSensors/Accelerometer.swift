@@ -41,26 +41,21 @@ class Accelerometer {
     
     func accelerometerDidChange(acceleration: CMAcceleration) {
         
-
         accelerationValues[1] = filtered(currentAcceleration: accelerationValues[1], UpdatedAcceleration: acceleration.y)
         accelerationValues[0] = filtered(currentAcceleration: accelerationValues[0], UpdatedAcceleration: acceleration.x)
         
-        
-        if accelerationValues[0] < -0.6{
+        if accelerationValues[0] < -0.6 {
             self.delegate?.orientationDeviceChange(orientation: Float(accelerationValues[1]))
             print(" ->\(+accelerationValues[1])")
 
-        }else{
-            print(" No entraaaaaaaaa")
-
         }
-        
 
     }
     
     func filtered(currentAcceleration: Double, UpdatedAcceleration: Double) -> Double {
         let kfilteringFactor = 0.5
-        return UpdatedAcceleration * kfilteringFactor + currentAcceleration * (1 - kfilteringFactor)
+        let res =  UpdatedAcceleration * kfilteringFactor + currentAcceleration * (1 - kfilteringFactor)
+        return res
     }
     
 }

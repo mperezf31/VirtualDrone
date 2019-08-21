@@ -16,7 +16,6 @@
 		5F168338230B1ED000230AA9 /* GameButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F168337230B1ED000230AA9 /* GameButton.swift */; };
 		5F16833A230C5D3B00230AA9 /* DroneNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F168339230C5D3B00230AA9 /* DroneNode.swift */; };
 		5F16833C230C62B500230AA9 /* Accelerometer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F16833B230C62B500230AA9 /* Accelerometer.swift */; };
-		5F168342230C971300230AA9 /* car.dae in Resources */ = {isa = PBXBuildFile; fileRef = 5F168341230C971300230AA9 /* car.dae */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,7 +30,6 @@
 		5F168337230B1ED000230AA9 /* GameButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameButton.swift; sourceTree = "<group>"; };
 		5F168339230C5D3B00230AA9 /* DroneNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DroneNode.swift; sourceTree = "<group>"; };
 		5F16833B230C62B500230AA9 /* Accelerometer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Accelerometer.swift; sourceTree = "<group>"; };
-		5F168341230C971300230AA9 /* car.dae */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml.dae; path = car.dae; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,7 +65,6 @@
 				5F16833E230C650400230AA9 /* Views */,
 				5F16833D230C64C100230AA9 /* DeviceSensors */,
 				5F168325230B099B00230AA9 /* ViewController.swift */,
-				5F168341230C971300230AA9 /* car.dae */,
 				5F168339230C5D3B00230AA9 /* DroneNode.swift */,
 				5F168321230B099B00230AA9 /* AppDelegate.swift */,
 				5F168327230B099B00230AA9 /* Main.storyboard */,
@@ -156,7 +153,6 @@
 				5F168324230B099B00230AA9 /* art.scnassets in Resources */,
 				5F16832E230B099E00230AA9 /* LaunchScreen.storyboard in Resources */,
 				5F16832B230B099E00230AA9 /* Assets.xcassets in Resources */,
-				5F168342230C971300230AA9 /* car.dae in Resources */,
 				5F168329230B099B00230AA9 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
