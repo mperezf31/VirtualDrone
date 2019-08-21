@@ -7,7 +7,6 @@
 //
 
 
-import Foundation
 import SceneKit
 
 class DroneNode :SCNNode {
@@ -24,6 +23,8 @@ class DroneNode :SCNNode {
         self.addChildNode(self.droneNode)
         self.physicsBody = SCNPhysicsBody(type: .dynamic, shape: nil)
         self.physicsBody?.isAffectedByGravity = false
+        self.physicsBody?.categoryBitMask = BitMaskCategory.drone.rawValue
+        self.physicsBody?.contactTestBitMask = BitMaskCategory.target.rawValue
     }
     
     func accelerate() {
@@ -41,6 +42,8 @@ class DroneNode :SCNNode {
     func descend() {
         applyForce(forceY: -velocity, forceZ: 0)
     }
+    
+    
     
     func turn(orientation: Float) {
         if orientation > 0 {

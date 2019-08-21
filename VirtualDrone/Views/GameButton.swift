@@ -6,8 +6,6 @@
 //  Copyright © 2019 Miguel Pérez. All rights reserved.
 //
 
-import Foundation
-import Foundation
 import UIKit
 
 class GameButton : UIButton {

@@ -19,10 +19,16 @@ enum ButtonsTags : Int {
     
 }
 
-class ViewController: UIViewController, ARSCNViewDelegate, GameButtonListener, AccelerometerListener{
+enum BitMaskCategory: Int {
+    case drone = 1
+    case target = 2
+}
+
+class ViewController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDelegate, GameButtonListener, AccelerometerListener{
     
     private var droneNode :DroneNode?
     private var accelerometer : Accelerometer?
+    private var planes = [PlaneNode]()
     
     @IBOutlet var sceneView: ARSCNView!
     
@@ -32,13 +38,15 @@ class ViewController: UIViewController, ARSCNViewDelegate, GameButtonListener, A
     @IBOutlet weak var ascend: GameButton!
     @IBOutlet weak var descend: GameButton!
     
-   
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         // Set the view's delegate
         sceneView.delegate = self
-        
+        sceneView.scene.physicsWorld.contactDelegate = self
+
+        //Buttons delegate
         self.accelerator.delegate = self
         self.reverse.delegate = self
         self.ascend.delegate = self
@@ -46,24 +54,46 @@ class ViewController: UIViewController, ARSCNViewDelegate, GameButtonListener, A
         
         // Show statistics such as fps and timing information
         sceneView.showsStatistics = true
-        
-        // Get drone model
-        let scene = SCNScene(named: "art.scnassets/ship.scn")!
-        
-        guard let node = scene.rootNode.childNode(withName: "ship", recursively: false) else {
-            return
-        }
-        
-        self.droneNode = DroneNode(node: node)
+        sceneView.debugOptions = [ARSCNDebugOptions.showWorldOrigin, ARSCNDebugOptions.showFeaturePoints]
+
+        self.droneNode = getDroneNode()
         
         // Set the scene to the view
-        sceneView.scene.rootNode.addChildNode(droneNode!)
+        if  (self.droneNode != nil) {
+            sceneView.scene.rootNode.addChildNode(self.droneNode!)
+        }
         
         //Add accelerometer listener
         self.accelerometer = Accelerometer()
         self.accelerometer!.delegate = self
+        
+        
+        self.addEgg(x: 1, y: 0, z: -2)
+        self.addEgg(x: 0, y: 0, z: -2)
+        self.addEgg(x: 1, y: 0, z: -2)
     }
     
+    
+    func addEgg(x: Float, y: Float, z: Float) {
+        let eggScene = SCNScene(named: "art.scnassets/egg.scn")
+        let eggNode = (eggScene?.rootNode.childNode(withName: "egg", recursively: false))!
+        eggNode.position = SCNVector3(x,y,z)
+        eggNode.physicsBody = SCNPhysicsBody(type: .static, shape: SCNPhysicsShape(node: eggNode, options: nil))
+        eggNode.physicsBody?.categoryBitMask = BitMaskCategory.target.rawValue
+        eggNode.physicsBody?.contactTestBitMask = BitMaskCategory.drone.rawValue
+        self.sceneView.scene.rootNode.addChildNode(eggNode)
+    }
+    
+    func getDroneNode() -> DroneNode? {
+        // Get drone model
+        let scene = SCNScene(named: "art.scnassets/ship.scn")!
+        
+        guard let node = scene.rootNode.childNode(withName: "ship", recursively: false) else {
+            return nil
+        }
+        
+        return DroneNode(node: node)
+    }
     
     
     override func viewWillAppear(_ animated: Bool) {
@@ -71,6 +101,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, GameButtonListener, A
         
         // Create a session configuration
         let configuration = ARWorldTrackingConfiguration()
+        
+        configuration.planeDetection = [.horizontal, .vertical]
         
         // Run the view's session
         sceneView.session.run(configuration)
@@ -112,7 +144,29 @@ class ViewController: UIViewController, ARSCNViewDelegate, GameButtonListener, A
     
     
     
-    
+    func physicsWorld(_ world: SCNPhysicsWorld, didBegin contact: SCNPhysicsContact) {
+        let nodeA = contact.nodeA
+        let nodeB = contact.nodeB
+        var Target : SCNNode?
+        
+        if nodeA.physicsBody?.categoryBitMask == BitMaskCategory.target.rawValue {
+            Target = nodeA
+        } else if nodeB.physicsBody?.categoryBitMask == BitMaskCategory.target.rawValue {
+            Target = nodeB
+        }
+        
+        let confetti = SCNParticleSystem(named: "art.scnassets/Fire.scnp", inDirectory: nil)
+        confetti?.loops = false
+        confetti?.particleLifeSpan = 4
+        confetti?.emitterShape = Target?.geometry
+
+        let confettiNode = SCNNode()
+        confettiNode.addParticleSystem(confetti!)
+        confettiNode.position = contact.contactPoint
+        self.sceneView.scene.rootNode.addChildNode(confettiNode)
+        Target?.removeFromParentNode()
+        
+    }
     
     
     
@@ -125,8 +179,30 @@ class ViewController: UIViewController, ARSCNViewDelegate, GameButtonListener, A
      
      return node
      }
-     */
+
+    func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
+        
+        if (anchor is ARPlaneAnchor) {
+            let plane = PlaneNode(anchor: anchor as! ARPlaneAnchor)
+            self.planes.append(plane)
+            node.addChildNode(plane)
+        }
+    }
     
+    func renderer(_ renderer: SCNSceneRenderer, didUpdate node: SCNNode, for anchor: ARAnchor) {
+        
+        if(anchor is ARPlaneAnchor){
+            let plane = self.planes.filter { plane in
+                return plane.anchor.identifier == anchor.identifier
+                }.first
+            
+            if plane != nil {
+                plane?.update(anchor: anchor as! ARPlaneAnchor)
+            }
+        }
+        
+    }
+     
     func session(_ session: ARSession, didFailWithError error: Error) {
         // Present an error message to the user
         
@@ -141,7 +217,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, GameButtonListener, A
         // Reset tracking and/or remove existing anchors if consistent tracking is required
         
     }
-    
+     */
     
     
 }
