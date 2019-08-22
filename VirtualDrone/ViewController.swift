@@ -154,15 +154,11 @@ class ViewController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
             target = nodeB
         }
         
-        let confetti = SCNParticleSystem(named: "art.scnassets/Confetti.scnp", inDirectory: nil)
-        confetti?.loops = false
-        confetti?.particleLifeSpan = 4
-        confetti?.emitterShape = target?.geometry
+        if(target != nil && target?.geometry != nil){
+            let confetti = AnimationNode(shape: target!.geometry!, position: contact.contactPoint)
+            self.sceneView.scene.rootNode.addChildNode(confetti)
+        }
         
-        let confettiNode = SCNNode()
-        confettiNode.addParticleSystem(confetti!)
-        confettiNode.position = contact.contactPoint
-        self.sceneView.scene.rootNode.addChildNode(confettiNode)
         target?.removeFromParentNode()
     }
     
@@ -177,11 +173,10 @@ class ViewController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
         let position = self.droneNode?.presentation.position
         let orientation = self.droneNode?.presentation.orientation
         self.droneNode?.removeFromParentNode()
-
+        
         if position != nil &&  orientation != nil {
             self.droneNode =  addDroneNode(dronePosition: position!, droneOrientation: SCNVector4(0,orientation!.y,0,1))
         }
-        
     }
     
     

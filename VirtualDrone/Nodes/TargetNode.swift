@@ -11,9 +11,7 @@ import SceneKit
 import ARKit
 
 class TargetNode :SCNNode {
-    
-    private var velocity = 10
-    
+        
     init(targetNode: SCNNode,position: SCNVector3) {
         super.init()
         self.addChildNode(targetNode)
