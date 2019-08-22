@@ -46,8 +46,6 @@ class Accelerometer {
         
         if accelerationValues[0] < -0.6 {
             self.delegate?.orientationDeviceChange(orientation: Float(accelerationValues[1]))
-            print(" ->\(+accelerationValues[1])")
-
         }
 
     }

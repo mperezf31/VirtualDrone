@@ -45,7 +45,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
         // Set the view's delegate
         sceneView.delegate = self
         sceneView.scene.physicsWorld.contactDelegate = self
-
+        
         //Buttons delegate
         self.accelerator.delegate = self
         self.reverse.delegate = self
@@ -55,13 +55,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
         // Show statistics such as fps and timing information
         sceneView.showsStatistics = true
         sceneView.debugOptions = [ARSCNDebugOptions.showWorldOrigin, ARSCNDebugOptions.showFeaturePoints]
-
-        self.droneNode = getDroneNode()
         
-        // Set the scene to the view
-        if  (self.droneNode != nil) {
-            sceneView.scene.rootNode.addChildNode(self.droneNode!)
-        }
+        self.droneNode = addDroneNode()
         
         //Add accelerometer listener
         self.accelerometer = Accelerometer()
@@ -70,7 +65,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
         
         self.addEgg(x: 1, y: 0, z: -2)
         self.addEgg(x: 0, y: 0, z: -2)
-        self.addEgg(x: 1, y: 0, z: -2)
+        self.addEgg(x: -1, y: 0, z: -2)
     }
     
     
@@ -84,7 +79,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
         self.sceneView.scene.rootNode.addChildNode(eggNode)
     }
     
-    func getDroneNode() -> DroneNode? {
+    func addDroneNode(dronePosition: SCNVector3 = SCNVector3(0,0,-0.5), droneOrientation: SCNVector4 = SCNVector4(0,0,0,0)) -> DroneNode? {
         // Get drone model
         let scene = SCNScene(named: "art.scnassets/ship.scn")!
         
@@ -92,7 +87,13 @@ class ViewController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
             return nil
         }
         
-        return DroneNode(node: node)
+        let drone = DroneNode(node: node)
+        drone.position = dronePosition
+        drone.orientation = droneOrientation
+        
+        // Set the scene to the view
+        sceneView.scene.rootNode.addChildNode(drone)
+        return drone
     }
     
     
@@ -117,6 +118,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
     
     
     func clicked(button : UIButton) {
+        checkDroneOrientation()
         
         if button.tag == ButtonsTags.accelerator.rawValue {
             self.droneNode?.accelerate()
@@ -134,7 +136,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
     }
     
     func orientationDeviceChange(orientation: Float) {
-        print("rotation", orientation)
         if  (orientation < 0.1 && orientation > -0.1) {
             self.droneNode?.stop()
         }else{
@@ -142,29 +143,44 @@ class ViewController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
         }
     }
     
-    
-    
     func physicsWorld(_ world: SCNPhysicsWorld, didBegin contact: SCNPhysicsContact) {
         let nodeA = contact.nodeA
         let nodeB = contact.nodeB
-        var Target : SCNNode?
+        var target : SCNNode?
         
         if nodeA.physicsBody?.categoryBitMask == BitMaskCategory.target.rawValue {
-            Target = nodeA
+            target = nodeA
         } else if nodeB.physicsBody?.categoryBitMask == BitMaskCategory.target.rawValue {
-            Target = nodeB
+            target = nodeB
         }
         
-        let confetti = SCNParticleSystem(named: "art.scnassets/Fire.scnp", inDirectory: nil)
+        let confetti = SCNParticleSystem(named: "art.scnassets/Confetti.scnp", inDirectory: nil)
         confetti?.loops = false
         confetti?.particleLifeSpan = 4
-        confetti?.emitterShape = Target?.geometry
-
+        confetti?.emitterShape = target?.geometry
+        
         let confettiNode = SCNNode()
         confettiNode.addParticleSystem(confetti!)
         confettiNode.position = contact.contactPoint
         self.sceneView.scene.rootNode.addChildNode(confettiNode)
-        Target?.removeFromParentNode()
+        target?.removeFromParentNode()
+    }
+    
+    func checkDroneOrientation() {
+        if self.droneNode?.presentation.orientation.x != 0 || self.droneNode?.presentation.orientation.z != 0 {
+            resetDrone()
+            print("Reset drone")
+        }
+    }
+    
+    func resetDrone() {
+        let position = self.droneNode?.presentation.position
+        let orientation = self.droneNode?.presentation.orientation
+        self.droneNode?.removeFromParentNode()
+
+        if position != nil &&  orientation != nil {
+            self.droneNode =  addDroneNode(dronePosition: position!, droneOrientation: SCNVector4(0,orientation!.y,0,1))
+        }
         
     }
     
@@ -179,44 +195,44 @@ class ViewController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
      
      return node
      }
-
-    func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
-        
-        if (anchor is ARPlaneAnchor) {
-            let plane = PlaneNode(anchor: anchor as! ARPlaneAnchor)
-            self.planes.append(plane)
-            node.addChildNode(plane)
-        }
-    }
-    
-    func renderer(_ renderer: SCNSceneRenderer, didUpdate node: SCNNode, for anchor: ARAnchor) {
-        
-        if(anchor is ARPlaneAnchor){
-            let plane = self.planes.filter { plane in
-                return plane.anchor.identifier == anchor.identifier
-                }.first
-            
-            if plane != nil {
-                plane?.update(anchor: anchor as! ARPlaneAnchor)
-            }
-        }
-        
-    }
      
-    func session(_ session: ARSession, didFailWithError error: Error) {
-        // Present an error message to the user
-        
-    }
-    
-    func sessionWasInterrupted(_ session: ARSession) {
-        // Inform the user that the session has been interrupted, for example, by presenting an overlay
-        
-    }
-    
-    func sessionInterruptionEnded(_ session: ARSession) {
-        // Reset tracking and/or remove existing anchors if consistent tracking is required
-        
-    }
+     func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
+     
+     if (anchor is ARPlaneAnchor) {
+     let plane = PlaneNode(anchor: anchor as! ARPlaneAnchor)
+     self.planes.append(plane)
+     node.addChildNode(plane)
+     }
+     }
+     
+     func renderer(_ renderer: SCNSceneRenderer, didUpdate node: SCNNode, for anchor: ARAnchor) {
+     
+     if(anchor is ARPlaneAnchor){
+     let plane = self.planes.filter { plane in
+     return plane.anchor.identifier == anchor.identifier
+     }.first
+     
+     if plane != nil {
+     plane?.update(anchor: anchor as! ARPlaneAnchor)
+     }
+     }
+     
+     }
+     
+     func session(_ session: ARSession, didFailWithError error: Error) {
+     // Present an error message to the user
+     
+     }
+     
+     func sessionWasInterrupted(_ session: ARSession) {
+     // Inform the user that the session has been interrupted, for example, by presenting an overlay
+     
+     }
+     
+     func sessionInterruptionEnded(_ session: ARSession) {
+     // Reset tracking and/or remove existing anchors if consistent tracking is required
+     
+     }
      */
     
     
