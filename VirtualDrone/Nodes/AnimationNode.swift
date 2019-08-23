@@ -21,7 +21,6 @@ class AnimationNode : SCNNode {
         
         self.addParticleSystem(confetti!)
         self.position = position
-        self.scale = SCNVector3(0.1, 0.1, 0.1)
     }
     
     

@@ -62,20 +62,17 @@ class ViewController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
         self.accelerometer = Accelerometer()
         self.accelerometer!.delegate = self
         
-        self.addEgg(x: 1, y: 0, z: -2)
-        self.addEgg(x: 0, y: 0, z: -2)
-        self.addEgg(x: -1, y: 0, z: -2)
+        self.addTargets(numTargets: 3)
     }
     
     
-    func addEgg(x: Float, y: Float, z: Float) {
-        let eggScene = SCNScene(named: "art.scnassets/egg.scn")
-        let eggNode = (eggScene?.rootNode.childNode(withName: "egg", recursively: false))!
-        eggNode.position = SCNVector3(x,y,z)
-        eggNode.physicsBody = SCNPhysicsBody(type: .static, shape: SCNPhysicsShape(node: eggNode, options: nil))
-        eggNode.physicsBody?.categoryBitMask = BitMaskCategory.target.rawValue
-        eggNode.physicsBody?.contactTestBitMask = BitMaskCategory.drone.rawValue
-        self.sceneView.scene.rootNode.addChildNode(eggNode)
+    func addTargets(numTargets :  Int) {
+        for _ in 0...numTargets {
+            let positionNode1 = SCNVector3(x: Float.random(in: -1...1), y: Float.random(in: -1...1), z: -2)
+            
+            let target = TargetNode(positionNode: positionNode1)
+            self.sceneView.scene.rootNode.addChildNode(target)
+        }
     }
     
     func addDroneNode(dronePosition: SCNVector3 = SCNVector3(0,0,-0.5), droneOrientation: SCNVector4 = SCNVector4(0,0,0,0)) -> DroneNode? {

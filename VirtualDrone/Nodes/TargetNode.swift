@@ -12,14 +12,22 @@ import ARKit
 
 class TargetNode :SCNNode {
         
-    init(targetNode: SCNNode,position: SCNVector3) {
+    init(positionNode: SCNVector3) {
         super.init()
-        self.addChildNode(targetNode)
 
-        self.position = position
-        self.physicsBody = SCNPhysicsBody.static()
-        self.physicsBody?.categoryBitMask = BitMaskCategory.target.rawValue
-        self.physicsBody?.contactTestBitMask = BitMaskCategory.drone.rawValue
+        let coinScene = SCNScene(named: "art.scnassets/CoinScene.scn")
+        let coinNode = (coinScene?.rootNode.childNode(withName: "Coin", recursively: false))!
+        self.addChildNode(coinNode)
+
+        position = positionNode
+        physicsBody = SCNPhysicsBody(type: .static, shape: SCNPhysicsShape(node: coinNode, options: nil))
+        physicsBody?.categoryBitMask = BitMaskCategory.target.rawValue
+        physicsBody?.contactTestBitMask = BitMaskCategory.drone.rawValue
+        
+        let rotationAction = SCNAction.rotate(by: CGFloat(360.degreesToRadians), around: SCNVector3(0, 1, 0), duration: 4)
+        let action = SCNAction.repeatForever(rotationAction)
+        runAction(action)
+        
     }
     
     
@@ -29,3 +37,7 @@ class TargetNode :SCNNode {
     
 }
 
+
+extension Int {
+    var degreesToRadians: Double { return Double(self) * .pi/180}
+}
