@@ -11,13 +11,13 @@ import SceneKit
 
 class AnimationNode : SCNNode {
     
-    init(shape : SCNGeometry, position : SCNVector3) {
+    init(position : SCNVector3) {
         super.init()
         
         let confetti = SCNParticleSystem(named: "art.scnassets/Fire.scnp", inDirectory: nil)
         confetti?.loops = false
         confetti?.particleLifeSpan = 4
-        confetti?.emitterShape = shape
+        confetti?.emitterShape = SCNSphere(radius: 0.05)
         
         self.addParticleSystem(confetti!)
         self.position = position

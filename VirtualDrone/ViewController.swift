@@ -143,10 +143,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
             target = nodeB
         }
         
-        if(target != nil && target?.geometry != nil){
-            let confetti = AnimationNode(shape: target!.geometry!, position: contact.contactPoint)
-            self.sceneView.scene.rootNode.addChildNode(confetti)
-        }
+        let confetti = AnimationNode(position: contact.contactPoint)
+        self.sceneView.scene.rootNode.addChildNode(confetti)
         
         target?.removeFromParentNode()
     }
