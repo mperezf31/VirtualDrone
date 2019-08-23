@@ -15,9 +15,17 @@ class DroneNode :SCNNode {
     
     private var velocity = 10
     
-    init(node: SCNNode) {
+    init(dronePosition : SCNVector3, droneOrientation : SCNVector4) {
         
-        self.droneNode = node
+        //let scene = SCNScene(named: "Drone.usdz")!
+       // let node = scene.rootNode.childNode(withName: "toy_biplane", recursively: false)
+
+        let scene = SCNScene(named: "art.scnassets/ship.scn")!
+        let node = scene.rootNode.childNode(withName: "ship", recursively: false)
+
+        
+        self.droneNode = node!
+        
         super.init()
         
         self.addChildNode(self.droneNode)
@@ -25,6 +33,10 @@ class DroneNode :SCNNode {
         self.physicsBody?.isAffectedByGravity = false
         self.physicsBody?.categoryBitMask = BitMaskCategory.drone.rawValue
         self.physicsBody?.contactTestBitMask = BitMaskCategory.target.rawValue
+        
+        self.position = dronePosition
+        self.orientation = droneOrientation
+        
     }
     
     func accelerate() {

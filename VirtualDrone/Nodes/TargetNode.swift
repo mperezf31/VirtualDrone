@@ -15,6 +15,7 @@ class TargetNode :SCNNode {
     init(positionNode: SCNVector3) {
         super.init()
 
+        
         let coinScene = SCNScene(named: "art.scnassets/CoinScene.scn")
         let coinNode = (coinScene?.rootNode.childNode(withName: "Coin", recursively: false))!
         self.addChildNode(coinNode)

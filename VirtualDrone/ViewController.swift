@@ -77,15 +77,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
     
     func addDroneNode(dronePosition: SCNVector3 = SCNVector3(0,0,-0.5), droneOrientation: SCNVector4 = SCNVector4(0,0,0,0)) -> DroneNode? {
         // Get drone model
-        let scene = SCNScene(named: "art.scnassets/ship.scn")!
-        
-        guard let node = scene.rootNode.childNode(withName: "ship", recursively: false) else {
-            return nil
-        }
-        
-        let drone = DroneNode(node: node)
-        drone.position = dronePosition
-        drone.orientation = droneOrientation
+
+        let drone = DroneNode(dronePosition : dronePosition, droneOrientation : droneOrientation)
         
         // Set the scene to the view
         sceneView.scene.rootNode.addChildNode(drone)
