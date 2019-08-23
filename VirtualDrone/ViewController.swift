@@ -62,7 +62,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
         self.accelerometer = Accelerometer()
         self.accelerometer!.delegate = self
         
-        
         self.addEgg(x: 1, y: 0, z: -2)
         self.addEgg(x: 0, y: 0, z: -2)
         self.addEgg(x: -1, y: 0, z: -2)
