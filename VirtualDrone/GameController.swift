@@ -24,7 +24,7 @@ enum BitMaskCategory: Int {
     case target = 2
 }
 
-class ViewController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDelegate, GameButtonListener, AccelerometerListener{
+class GameController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDelegate, GameButtonListener, AccelerometerListener{
     
     private var droneNode :DroneNode?
     private var accelerometer : Accelerometer?
