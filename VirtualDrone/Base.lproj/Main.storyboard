@@ -158,8 +158,10 @@
                         <outlet property="accelerator" destination="1xU-iH-0nO" id="o8r-KE-4bt"/>
                         <outlet property="ascend" destination="3tg-wd-zGZ" id="X6t-XH-8hg"/>
                         <outlet property="descend" destination="tdQ-Wa-UWM" id="5e5-xv-n4g"/>
+                        <outlet property="numCoinsLabel" destination="kQP-qv-0CZ" id="3Yf-Mi-0ES"/>
                         <outlet property="reverse" destination="A9J-VS-2Z5" id="AmJ-bV-0rB"/>
                         <outlet property="sceneView" destination="BrB-h1-WRS" id="5nT-qQ-ynl"/>
+                        <outlet property="timeLabel" destination="bmG-AA-a0R" id="sEV-aV-lJ4"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="SZV-WD-TEh" sceneMemberID="firstResponder"/>

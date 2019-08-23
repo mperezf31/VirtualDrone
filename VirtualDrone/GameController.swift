@@ -30,14 +30,18 @@ class GameController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
     private var accelerometer : Accelerometer?
     private var planes = [PlaneNode]()
     
+    private var initialCoins = [String]()
+
+    private var caughtCoins = [String]()
+
     @IBOutlet var sceneView: ARSCNView!
+    @IBOutlet weak var timeLabel: UILabel!
+    @IBOutlet weak var numCoinsLabel: UILabel!
     
     @IBOutlet weak var accelerator: GameButton!
     @IBOutlet weak var reverse: GameButton!
-    
     @IBOutlet weak var ascend: GameButton!
     @IBOutlet weak var descend: GameButton!
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -46,45 +50,16 @@ class GameController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
         sceneView.delegate = self
         sceneView.scene.physicsWorld.contactDelegate = self
         
-        //Buttons delegate
-        self.accelerator.delegate = self
-        self.reverse.delegate = self
-        self.ascend.delegate = self
-        self.descend.delegate = self
+        addButtonDelegates()
+        
+        serUpAccelerometer()
         
         // Show statistics such as fps and timing information
         sceneView.showsStatistics = true
         sceneView.debugOptions = [ARSCNDebugOptions.showWorldOrigin, ARSCNDebugOptions.showFeaturePoints]
         
-        self.droneNode = addDroneNode()
-        
-        //Add accelerometer listener
-        self.accelerometer = Accelerometer()
-        self.accelerometer!.delegate = self
-        
-        self.addTargets(numTargets: 3)
+        restartGame()
     }
-    
-    
-    func addTargets(numTargets :  Int) {
-        for _ in 0...numTargets {
-            let positionNode1 = SCNVector3(x: Float.random(in: -1...1), y: Float.random(in: -1...1), z: -2)
-            
-            let target = TargetNode(positionNode: positionNode1)
-            self.sceneView.scene.rootNode.addChildNode(target)
-        }
-    }
-    
-    func addDroneNode(dronePosition: SCNVector3 = SCNVector3(0,0,-0.5), droneOrientation: SCNVector4 = SCNVector4(0,0,0,0)) -> DroneNode? {
-        // Get drone model
-
-        let drone = DroneNode(dronePosition : dronePosition, droneOrientation : droneOrientation)
-        
-        // Set the scene to the view
-        sceneView.scene.rootNode.addChildNode(drone)
-        return drone
-    }
-    
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -105,6 +80,61 @@ class GameController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
         sceneView.session.pause()
     }
     
+    private func addButtonDelegates(){
+        
+        //Buttons delegate
+        self.accelerator.delegate = self
+        self.reverse.delegate = self
+        self.ascend.delegate = self
+        self.descend.delegate = self
+    }
+    
+    private func serUpAccelerometer() {
+        self.accelerometer = Accelerometer()
+        self.accelerometer!.delegate = self
+    }
+    
+    
+    private func restartGame() {
+        
+        self.droneNode = addDroneNode(dronePosition: self.getPointOfView())
+        self.addTargets(numTargets: 3)
+    }
+    
+    private func addDroneNode(dronePosition: SCNVector3, droneOrientation: SCNVector4 = SCNVector4(0,0,0,0)) -> DroneNode? {
+        // Get drone model
+        let drone = DroneNode(dronePosition : dronePosition, droneOrientation : droneOrientation)
+        
+        // Set the scene to the view
+        sceneView.scene.rootNode.addChildNode(drone)
+        return drone
+    }
+    
+    private func addTargets(numTargets :  Int) {
+        
+        self.initialCoins.removeAll()
+        self.caughtCoins.removeAll()
+
+        for i in 1...numTargets {
+            let targetName = "target_\(i)"
+            
+            // let positionNode1 = SCNVector3(x: Float.random(in: -2...2), y: Float.random(in: -2...2), z: Float.random(in: -3...(-1)))
+            let positionNode1 = SCNVector3(x: Float.random(in: -1...1), y: Float.random(in: -1...1), z: -2)
+            
+            let target = TargetNode(positionNode: positionNode1)
+            target.name = targetName
+            self.sceneView.scene.rootNode.addChildNode(target)
+            
+            self.initialCoins.append(targetName)
+        }
+        
+        updateNumCoins()
+    }
+    
+    private func updateNumCoins(){
+        self.numCoinsLabel.text = String(String(self.caughtCoins.count) + "\\" + String(self.initialCoins.count))
+    }
+
     
     func clicked(button : UIButton) {
         checkDroneOrientation()
@@ -143,31 +173,44 @@ class GameController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
             target = nodeB
         }
         
-        let confetti = AnimationNode(position: contact.contactPoint)
-        self.sceneView.scene.rootNode.addChildNode(confetti)
-        
-        target?.removeFromParentNode()
+        if (target?.name != nil && self.initialCoins.contains(target!.name!) && !self.caughtCoins.contains(target!.name!)){
+            print("Se añade" + target!.name!)
+            self.caughtCoins.append(target!.name!)
+            updateNumCoins()
+            checkFinishGame()
+            
+            let confetti = AnimationNode(position: contact.contactPoint)
+            self.sceneView.scene.rootNode.addChildNode(confetti)
+            target?.removeFromParentNode()
+        }
+
     }
     
-    func checkDroneOrientation() {
+    private func checkFinishGame(){
+        
+    }
+    
+    private func checkDroneOrientation() {
         if self.droneNode?.presentation.orientation.x != 0 || self.droneNode?.presentation.orientation.z != 0 {
-            resetDrone()
-            print("Reset drone")
+            let position = self.droneNode?.presentation.position
+            let orientation = self.droneNode?.presentation.orientation
+            if position != nil &&  orientation != nil {
+                self.droneNode?.removeFromParentNode()
+                self.droneNode =  addDroneNode(dronePosition: position!, droneOrientation: SCNVector4(0,orientation!.y,0,1))
+            }
         }
     }
     
-    func resetDrone() {
-        let position = self.droneNode?.presentation.position
-        let orientation = self.droneNode?.presentation.orientation
-        self.droneNode?.removeFromParentNode()
-        
-        if position != nil &&  orientation != nil {
-            self.droneNode =  addDroneNode(dronePosition: position!, droneOrientation: SCNVector4(0,orientation!.y,0,1))
-        }
+    private func getPointOfView() -> SCNVector3{
+        guard let pointOfView = sceneView.pointOfView else {return SCNVector3(-0, 0, -0.1 )}
+        let transform = pointOfView.transform
+        let orientation = SCNVector3(-transform.m31, -transform.m32, -transform.m33)
+        let location = SCNVector3(transform.m41, transform.m42, transform.m43)
+        let position = orientation + location
+        return position
     }
     
-    
-    
+
     // MARK: - ARSCNViewDelegate
     
     /*
@@ -218,4 +261,8 @@ class GameController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
      */
     
     
+}
+
+func +(left: SCNVector3, right: SCNVector3) -> SCNVector3 {
+    return SCNVector3Make(left.x + right.x, left.y + right.y, left.z + right.z)
 }

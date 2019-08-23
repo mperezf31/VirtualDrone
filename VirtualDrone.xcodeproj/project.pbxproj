@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		5F168322230B099B00230AA9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F168321230B099B00230AA9 /* AppDelegate.swift */; };
 		5F168324230B099B00230AA9 /* art.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 5F168323230B099B00230AA9 /* art.scnassets */; };
-		5F168326230B099B00230AA9 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F168325230B099B00230AA9 /* ViewController.swift */; };
+		5F168326230B099B00230AA9 /* GameController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F168325230B099B00230AA9 /* GameController.swift */; };
 		5F168329230B099B00230AA9 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5F168327230B099B00230AA9 /* Main.storyboard */; };
 		5F16832B230B099E00230AA9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5F16832A230B099E00230AA9 /* Assets.xcassets */; };
 		5F16832E230B099E00230AA9 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5F16832C230B099E00230AA9 /* LaunchScreen.storyboard */; };
@@ -26,7 +26,7 @@
 		5F16831E230B099B00230AA9 /* VirtualDrone.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VirtualDrone.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5F168321230B099B00230AA9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5F168323230B099B00230AA9 /* art.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = art.scnassets; sourceTree = "<group>"; };
-		5F168325230B099B00230AA9 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		5F168325230B099B00230AA9 /* GameController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameController.swift; sourceTree = "<group>"; };
 		5F168328230B099B00230AA9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		5F16832A230B099E00230AA9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5F16832D230B099E00230AA9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -74,7 +74,7 @@
 				5F168343230DA66E00230AA9 /* Nodes */,
 				5F16833E230C650400230AA9 /* Views */,
 				5F16833D230C64C100230AA9 /* DeviceSensors */,
-				5F168325230B099B00230AA9 /* ViewController.swift */,
+				5F168325230B099B00230AA9 /* GameController.swift */,
 				5F168321230B099B00230AA9 /* AppDelegate.swift */,
 				5F168327230B099B00230AA9 /* Main.storyboard */,
 				5F168323230B099B00230AA9 /* art.scnassets */,
@@ -187,7 +187,7 @@
 			files = (
 				5F16833C230C62B500230AA9 /* Accelerometer.swift in Sources */,
 				5F16833A230C5D3B00230AA9 /* DroneNode.swift in Sources */,
-				5F168326230B099B00230AA9 /* ViewController.swift in Sources */,
+				5F168326230B099B00230AA9 /* GameController.swift in Sources */,
 				5F168338230B1ED000230AA9 /* GameButton.swift in Sources */,
 				5F43570D230F0C510087B0B9 /* AnimationNode.swift in Sources */,
 				5F435701230DC6630087B0B9 /* TargetNode.swift in Sources */,
