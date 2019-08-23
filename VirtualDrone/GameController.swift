@@ -26,13 +26,17 @@ enum BitMaskCategory: Int {
 
 class GameController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDelegate, GameButtonListener, AccelerometerListener{
     
+    private let MAX_GAME_TIME = 13
+    private let NUM_TARGETS = 5
+    
     private var droneNode :DroneNode?
     private var accelerometer : Accelerometer?
     private var planes = [PlaneNode]()
     
     private var initialCoins = [String]()
-
     private var caughtCoins = [String]()
+    private var timer :Timer!
+    private var gameTime = 0 //Seconds
 
     @IBOutlet var sceneView: ARSCNView!
     @IBOutlet weak var timeLabel: UILabel!
@@ -42,6 +46,10 @@ class GameController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
     @IBOutlet weak var reverse: GameButton!
     @IBOutlet weak var ascend: GameButton!
     @IBOutlet weak var descend: GameButton!
+    
+    @IBAction func restartButton(_ sender: Any) {
+        restartGame()
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -58,7 +66,6 @@ class GameController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
         sceneView.showsStatistics = true
         sceneView.debugOptions = [ARSCNDebugOptions.showWorldOrigin, ARSCNDebugOptions.showFeaturePoints]
         
-        restartGame()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -78,6 +85,8 @@ class GameController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
         
         // Pause the view's session
         sceneView.session.pause()
+        self.timer.invalidate()
+
     }
     
     private func addButtonDelegates(){
@@ -96,9 +105,25 @@ class GameController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
     
     
     private func restartGame() {
+        self.gameTime = self.MAX_GAME_TIME
+        updateTime()
+        
+        self.sceneView.scene.rootNode.enumerateChildNodes { (node, stop) in
+            node.removeFromParentNode()
+        }
         
         self.droneNode = addDroneNode(dronePosition: self.getPointOfView())
-        self.addTargets(numTargets: 3)
+        self.addTargets(numTargets: self.NUM_TARGETS)
+        
+        self.timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { [weak self] (timer :Timer) in
+            self?.gameTime -= 1
+            self?.updateTime()
+            
+            if(self?.gameTime == 0){
+                self?.finishGame(success: false)
+            }
+        })
+        
     }
     
     private func addDroneNode(dronePosition: SCNVector3, droneOrientation: SCNVector4 = SCNVector4(0,0,0,0)) -> DroneNode? {
@@ -114,7 +139,7 @@ class GameController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
         
         self.initialCoins.removeAll()
         self.caughtCoins.removeAll()
-
+        
         for i in 1...numTargets {
             let targetName = "target_\(i)"
             
@@ -132,9 +157,54 @@ class GameController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
     }
     
     private func updateNumCoins(){
-        self.numCoinsLabel.text = String(String(self.caughtCoins.count) + "\\" + String(self.initialCoins.count))
+        DispatchQueue.main.async {
+            self.numCoinsLabel.text = String(String(self.caughtCoins.count) + "\\" + String(self.initialCoins.count))
+        }
+    }
+    
+    private func updateTime() {
+        DispatchQueue.main.async {
+            self.timeLabel.text = "\(self.gameTime) s"
+        }
+        
+        if self.gameTime > 10 {
+            self.timeLabel.backgroundColor = self.view.tintColor
+        }else{
+            self.timeLabel.backgroundColor = UIColor.red
+        }
+       
     }
 
+    private func checkDroneOrientation() {
+        if self.droneNode?.presentation.orientation.x != 0 || self.droneNode?.presentation.orientation.z != 0 {
+            let position = self.droneNode?.presentation.position
+            let orientation = self.droneNode?.presentation.orientation
+            if position != nil &&  orientation != nil {
+                self.droneNode?.removeFromParentNode()
+                self.droneNode =  addDroneNode(dronePosition: position!, droneOrientation: SCNVector4(0,orientation!.y,0,1))
+            }
+        }
+    }
+    
+    private func getPointOfView() -> SCNVector3{
+        guard let pointOfView = sceneView.pointOfView else {return SCNVector3(-0, 0, -0.1 )}
+        let transform = pointOfView.transform
+        let orientation = SCNVector3(-transform.m31, -transform.m32, -transform.m33)
+        let location = SCNVector3(transform.m41, transform.m42, transform.m43)
+        let position = orientation + location
+        return position
+    }
+    
+    private func finishGame(success: Bool){
+        self.timer.invalidate()
+        self.gameTime = 0
+        
+        if success{
+            showSuccessAlert()
+        }else{
+            showGameOverAlert()
+        }
+    }
     
     func clicked(button : UIButton) {
         checkDroneOrientation()
@@ -177,40 +247,42 @@ class GameController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
             print("Se añade" + target!.name!)
             self.caughtCoins.append(target!.name!)
             updateNumCoins()
-            checkFinishGame()
             
             let confetti = AnimationNode(position: contact.contactPoint)
             self.sceneView.scene.rootNode.addChildNode(confetti)
             target?.removeFromParentNode()
-        }
-
-    }
-    
-    private func checkFinishGame(){
-        
-    }
-    
-    private func checkDroneOrientation() {
-        if self.droneNode?.presentation.orientation.x != 0 || self.droneNode?.presentation.orientation.z != 0 {
-            let position = self.droneNode?.presentation.position
-            let orientation = self.droneNode?.presentation.orientation
-            if position != nil &&  orientation != nil {
-                self.droneNode?.removeFromParentNode()
-                self.droneNode =  addDroneNode(dronePosition: position!, droneOrientation: SCNVector4(0,orientation!.y,0,1))
+            
+            if self.initialCoins.count == self.caughtCoins.count {
+                finishGame(success: true)
             }
         }
+        
     }
-    
-    private func getPointOfView() -> SCNVector3{
-        guard let pointOfView = sceneView.pointOfView else {return SCNVector3(-0, 0, -0.1 )}
-        let transform = pointOfView.transform
-        let orientation = SCNVector3(-transform.m31, -transform.m32, -transform.m33)
-        let location = SCNVector3(transform.m41, transform.m42, transform.m43)
-        let position = orientation + location
-        return position
-    }
-    
 
+    private func showSuccessAlert() {
+        let alert = UIAlertController(title: "Enhorabuena!!", message: "Has conseguido atrapar todas las monegas antes de que se agotase el tiempo", preferredStyle: .alert)
+       
+        alert.addAction(UIAlertAction(title: "Siguiente nivel", style: .default, handler: { action in
+            self.restartGame()
+            
+        }))
+        
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    private func showGameOverAlert() {
+        
+        let alert = UIAlertController(title: "Game Over!!", message: "No has conseguido atrapar todas las monedas en el tiempo establecido", preferredStyle: .alert)
+        
+        alert.addAction(UIAlertAction(title: "Reintentar", style: .default, handler: { action in
+                
+                self.restartGame()
+
+            }))
+        
+        self.present(alert, animated: true, completion: nil)
+    }
+    
     // MARK: - ARSCNViewDelegate
     
     /*
