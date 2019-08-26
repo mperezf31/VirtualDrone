@@ -16,10 +16,11 @@
 		5F168338230B1ED000230AA9 /* GameButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F168337230B1ED000230AA9 /* GameButton.swift */; };
 		5F16833A230C5D3B00230AA9 /* DroneNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F168339230C5D3B00230AA9 /* DroneNode.swift */; };
 		5F16833C230C62B500230AA9 /* Accelerometer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F16833B230C62B500230AA9 /* Accelerometer.swift */; };
-		5F168345230DA68D00230AA9 /* PlaneNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F168344230DA68D00230AA9 /* PlaneNode.swift */; };
-		5F168347230DABC400230AA9 /* overlay_grid.png in Resources */ = {isa = PBXBuildFile; fileRef = 5F168346230DABC400230AA9 /* overlay_grid.png */; };
 		5F435701230DC6630087B0B9 /* TargetNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F435700230DC6630087B0B9 /* TargetNode.swift */; };
 		5F43570D230F0C510087B0B9 /* AnimationNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F43570C230F0C510087B0B9 /* AnimationNode.swift */; };
+		5FF91B7B23144BC70087BD57 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FF91B7A23144BC70087BD57 /* Extensions.swift */; };
+		5FF91B7E23144D180087BD57 /* AppStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FF91B7D23144D180087BD57 /* AppStorage.swift */; };
+		5FF91B80231450F40087BD57 /* IAppStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FF91B7F231450F40087BD57 /* IAppStorage.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,10 +35,11 @@
 		5F168337230B1ED000230AA9 /* GameButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameButton.swift; sourceTree = "<group>"; };
 		5F168339230C5D3B00230AA9 /* DroneNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DroneNode.swift; sourceTree = "<group>"; };
 		5F16833B230C62B500230AA9 /* Accelerometer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Accelerometer.swift; sourceTree = "<group>"; };
-		5F168344230DA68D00230AA9 /* PlaneNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaneNode.swift; sourceTree = "<group>"; };
-		5F168346230DABC400230AA9 /* overlay_grid.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = overlay_grid.png; sourceTree = "<group>"; };
 		5F435700230DC6630087B0B9 /* TargetNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TargetNode.swift; sourceTree = "<group>"; };
 		5F43570C230F0C510087B0B9 /* AnimationNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnimationNode.swift; sourceTree = "<group>"; };
+		5FF91B7A23144BC70087BD57 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		5FF91B7D23144D180087BD57 /* AppStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStorage.swift; sourceTree = "<group>"; };
+		5FF91B7F231450F40087BD57 /* IAppStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IAppStorage.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,7 +72,8 @@
 		5F168320230B099B00230AA9 /* VirtualDrone */ = {
 			isa = PBXGroup;
 			children = (
-				5F168346230DABC400230AA9 /* overlay_grid.png */,
+				5FF91B7C23144C570087BD57 /* Storage */,
+				5FF91B7923144BB50087BD57 /* Extensions */,
 				5F168343230DA66E00230AA9 /* Nodes */,
 				5F16833E230C650400230AA9 /* Views */,
 				5F16833D230C64C100230AA9 /* DeviceSensors */,
@@ -106,10 +109,26 @@
 			children = (
 				5F43570C230F0C510087B0B9 /* AnimationNode.swift */,
 				5F168339230C5D3B00230AA9 /* DroneNode.swift */,
-				5F168344230DA68D00230AA9 /* PlaneNode.swift */,
 				5F435700230DC6630087B0B9 /* TargetNode.swift */,
 			);
 			path = Nodes;
+			sourceTree = "<group>";
+		};
+		5FF91B7923144BB50087BD57 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				5FF91B7A23144BC70087BD57 /* Extensions.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		5FF91B7C23144C570087BD57 /* Storage */ = {
+			isa = PBXGroup;
+			children = (
+				5FF91B7D23144D180087BD57 /* AppStorage.swift */,
+				5FF91B7F231450F40087BD57 /* IAppStorage.swift */,
+			);
+			path = Storage;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -171,7 +190,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				5F168324230B099B00230AA9 /* art.scnassets in Resources */,
-				5F168347230DABC400230AA9 /* overlay_grid.png in Resources */,
 				5F16832E230B099E00230AA9 /* LaunchScreen.storyboard in Resources */,
 				5F16832B230B099E00230AA9 /* Assets.xcassets in Resources */,
 				5F168329230B099B00230AA9 /* Main.storyboard in Resources */,
@@ -185,14 +203,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5FF91B80231450F40087BD57 /* IAppStorage.swift in Sources */,
 				5F16833C230C62B500230AA9 /* Accelerometer.swift in Sources */,
+				5FF91B7B23144BC70087BD57 /* Extensions.swift in Sources */,
 				5F16833A230C5D3B00230AA9 /* DroneNode.swift in Sources */,
 				5F168326230B099B00230AA9 /* GameController.swift in Sources */,
 				5F168338230B1ED000230AA9 /* GameButton.swift in Sources */,
 				5F43570D230F0C510087B0B9 /* AnimationNode.swift in Sources */,
 				5F435701230DC6630087B0B9 /* TargetNode.swift in Sources */,
-				5F168345230DA68D00230AA9 /* PlaneNode.swift in Sources */,
 				5F168322230B099B00230AA9 /* AppDelegate.swift in Sources */,
+				5FF91B7E23144D180087BD57 /* AppStorage.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
