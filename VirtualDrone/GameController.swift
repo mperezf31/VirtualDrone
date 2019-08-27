@@ -26,8 +26,8 @@ enum BitMaskCategory: Int {
 
 class GameController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDelegate, GameButtonListener, AccelerometerListener{
     
-    private let MAX_GAME_TIME = 10
-    private let NUM_TARGETS = 8
+    private let MAX_GAME_TIME = 190
+    private let NUM_TARGETS = 0
     
     private var droneNode :DroneNode?
     private var accelerometer : Accelerometer?
@@ -38,11 +38,13 @@ class GameController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
     private var gameTime = 0 //Seconds
     private var appStorage : IAppStorage!
     private var currentLevel :Int = 0
-
+    
     @IBOutlet var sceneView: ARSCNView!
     @IBOutlet weak var timeLabel: UILabel!
     @IBOutlet weak var numCoinsLabel: UILabel!
+    @IBOutlet weak var levelLabel: UILabel!
     
+    @IBOutlet weak var messageTitleLabel: UILabel!
     @IBOutlet weak var messageLabel: UILabel!
     @IBOutlet weak var messageView: UIView!
     @IBAction func startGame(_ sender: Any) {
@@ -56,7 +58,9 @@ class GameController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
     @IBOutlet weak var descend: GameButton!
     
     @IBAction func restartButton(_ sender: Any) {
-        restartGame()
+        if self.messageView.isHidden{
+            restartGame()
+        }
     }
     
     override func viewDidLoad() {
@@ -73,7 +77,7 @@ class GameController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
         serUpAccelerometer()
         
         // Show statistics such as fps and timing information
-        sceneView.showsStatistics = true
+        //sceneView.showsStatistics = true
         sceneView.debugOptions = [ARSCNDebugOptions.showWorldOrigin, ARSCNDebugOptions.showFeaturePoints]
         
         getInitialGameLevel()
@@ -85,7 +89,7 @@ class GameController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
         // Create a session configuration
         let configuration = ARWorldTrackingConfiguration()
         
-        configuration.planeDetection = [.horizontal, .vertical]
+        // configuration.planeDetection = [.horizontal, .vertical]
         
         // Run the view's session
         sceneView.session.run(configuration)
@@ -97,13 +101,14 @@ class GameController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
         // Pause the view's session
         sceneView.session.pause()
         self.timer.invalidate()
-
+        
     }
     
     private func getInitialGameLevel(){
         self.appStorage.getCurrentGameLevel(){ level in
             self.currentLevel = level
-            self.messageLabel.text = "Captura con el drone todas las monedas colocadas en tu entorno antes de que se agote el tiempo.\n Nivel \(self.currentLevel)"
+            self.levelLabel.text = "Nivel \(self.currentLevel)"
+            self.showInitialMessage()
         }
     }
     
@@ -125,12 +130,11 @@ class GameController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
     private func restartGame() {
         self.gameTime = self.MAX_GAME_TIME - (self.currentLevel * 10)
         updateTime()
-        
-        self.sceneView.scene.rootNode.enumerateChildNodes { (node, stop) in
-            node.removeFromParentNode()
-        }
+        self.removeAllNodes()
         
         self.droneNode = addDroneNode(dronePosition: self.getPointOfView())
+        self.droneNode?.name = "drone"
+        
         self.addTargets(numTargets: self.NUM_TARGETS + (self.currentLevel * 2) )
         
         self.timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { [weak self] (timer :Timer) in
@@ -142,6 +146,14 @@ class GameController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
             }
         })
         
+    }
+    
+    private func removeAllNodes() {
+        self.sceneView.scene.rootNode.childNode(withName: "drone", recursively: false)?.removeFromParentNode()
+        
+        for target in self.initialCoins {
+            self.sceneView.scene.rootNode.childNode(withName: target, recursively: false)?.removeFromParentNode()
+        }
     }
     
     private func addDroneNode(dronePosition: SCNVector3, droneOrientation: SCNVector4 = SCNVector4(0,0,0,0)) -> DroneNode? {
@@ -194,9 +206,9 @@ class GameController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
         }else{
             self.timeLabel.backgroundColor = UIColor.red
         }
-       
+        
     }
-
+    
     private func checkDroneOrientation() {
         if self.droneNode?.presentation.orientation.x != 0 || self.droneNode?.presentation.orientation.z != 0 {
             let position = self.droneNode?.presentation.position
@@ -224,9 +236,12 @@ class GameController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
         if success{
             self.appStorage.increaseGameLevel()
             self.currentLevel += 1
-            showSuccessAlert()
+            DispatchQueue.main.async {
+                self.levelLabel.text = "Nivel \(self.currentLevel)"
+            }
+            showSuccessMessage()
         }else{
-            showGameOverAlert()
+            showGameOverMessage()
         }
     }
     
@@ -282,31 +297,27 @@ class GameController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
         }
         
     }
-
-    private func showSuccessAlert() {
-        let alert = UIAlertController(title: "Enhorabuena!!", message: "Has conseguido atrapar todas las monedas antes de que se agotase el tiempo.\n Siguiente nivel: \(self.currentLevel)", preferredStyle: .alert)
-       
-        alert.addAction(UIAlertAction(title: "Siguiente", style: .default, handler: { action in
-            self.restartGame()
-            
-        }))
-        
-        self.present(alert, animated: true, completion: nil)
+    
+    func showInitialMessage() {
+        showMessage( title: "VirtualNode",msg: "Captura todas las monedas de tu entorno antes de que se agote el tiempo. Mueve la cámara de un lado a otro antes de empezar para que se reconozca el entorno.")
     }
     
-    private func showGameOverAlert() {
-        
-        let alert = UIAlertController(title: "Game Over!!", message: "No has conseguido atrapar todas las monedas en el tiempo establecido.\n Nivel: \(self.currentLevel)", preferredStyle: .alert)
-        
-        alert.addAction(UIAlertAction(title: "Reintentar", style: .default, handler: { action in
-                
-                self.restartGame()
-
-            }))
-        
-        self.present(alert, animated: true, completion: nil)
+    
+    private func showSuccessMessage() {
+        showMessage( title: "Enhorabuena!!",msg: "Has conseguido atrapar todas las monedas antes de que se agotase el tiempo.\nA por el nivel nivel \(self.currentLevel)")
     }
     
+    private func showGameOverMessage() {
+        showMessage(title: "Game Over!!",msg: "No has conseguido atrapar todas las monedas en el tiempo establecido.\n Reintentar nivel \(self.currentLevel)")
+    }
+    
+    private func showMessage(title: String, msg : String){
+        DispatchQueue.main.async {
+            self.messageTitleLabel.text = title
+            self.messageLabel.text = msg
+            self.messageView.isHidden = false
+        }
+    }
 }
 
 func +(left: SCNVector3, right: SCNVector3) -> SCNVector3 {

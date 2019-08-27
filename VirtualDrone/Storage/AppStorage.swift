@@ -26,10 +26,8 @@ class AppStorage : IAppStorage
     
     func increaseGameLevel() {
         
-        getCurrentGameLevel(){ level in
-            UserDefaults.standard.set(level+1, forKey: self.GAME_LEVEL)
-        }
-        
+        let newLevel = UserDefaults.standard.integer(forKey: GAME_LEVEL) + 1
+        UserDefaults.standard.set(newLevel, forKey: self.GAME_LEVEL)
     }
    
 }
