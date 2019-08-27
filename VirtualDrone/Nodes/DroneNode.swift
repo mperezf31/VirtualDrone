@@ -20,10 +20,15 @@ class DroneNode :SCNNode {
         //let scene = SCNScene(named: "Drone.usdz")!
        // let node = scene.rootNode.childNode(withName: "toy_biplane", recursively: false)
 
-        let scene = SCNScene(named: "art.scnassets/ship.scn")!
-        let node = scene.rootNode.childNode(withName: "ship", recursively: false)
+        let scene = SCNScene(named: "art.scnassets/Drone.scn")!
+        let node = scene.rootNode.childNode(withName: "helicopter", recursively: false)
+        let nodeRotorR = scene.rootNode.childNode(withName: "Rotor_R", recursively: true)
+        let nodeRotorL = scene.rootNode.childNode(withName: "Rotor_L", recursively: true)
+        let rotationAction = SCNAction.rotate(by: CGFloat(360.degreesToRadians), around: SCNVector3(0, 1, 0), duration: 2)
+        let action = SCNAction.repeatForever(rotationAction)
+        nodeRotorR?.runAction(action)
+        nodeRotorL?.runAction(action)
 
-        
         self.droneNode = node!
         
         super.init()

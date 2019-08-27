@@ -304,7 +304,7 @@ class GameController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
     
     
     private func showSuccessMessage() {
-        showMessage( title: "Enhorabuena!!",msg: "Has conseguido atrapar todas las monedas antes de que se agotase el tiempo.\nA por el nivel nivel \(self.currentLevel)")
+        showMessage( title: "Enhorabuena!!",msg: "Has conseguido atrapar todas las monedas antes de que se agotase el tiempo.\nA por el nivel \(self.currentLevel)")
     }
     
     private func showGameOverMessage() {
