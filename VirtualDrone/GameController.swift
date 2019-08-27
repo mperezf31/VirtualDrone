@@ -27,7 +27,7 @@ enum BitMaskCategory: Int {
 class GameController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDelegate, GameButtonListener, AccelerometerListener{
     
     private let MAX_GAME_TIME = 190
-    private let NUM_TARGETS = 0
+    private let NUM_TARGETS = 8
     
     private var droneNode :DroneNode?
     private var accelerometer : Accelerometer?
@@ -149,10 +149,8 @@ class GameController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
     }
     
     private func removeAllNodes() {
-        self.sceneView.scene.rootNode.childNode(withName: "drone", recursively: false)?.removeFromParentNode()
-        
-        for target in self.initialCoins {
-            self.sceneView.scene.rootNode.childNode(withName: target, recursively: false)?.removeFromParentNode()
+        self.sceneView.scene.rootNode.enumerateChildNodes { (node, stop) in
+            node.removeFromParentNode()
         }
     }
     
@@ -246,6 +244,8 @@ class GameController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
     }
     
     func clicked(button : UIButton) {
+        guard self.messageView.isHidden else { return}
+        
         checkDroneOrientation()
         
         if button.tag == ButtonsTags.accelerator.rawValue {
@@ -264,6 +264,8 @@ class GameController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
     }
     
     func orientationDeviceChange(orientation: Float) {
+        guard self.messageView.isHidden else { return}
+
         if  (orientation < 0.1 && orientation > -0.1) {
             self.droneNode?.stop()
         }else{
