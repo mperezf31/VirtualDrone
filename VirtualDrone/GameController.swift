@@ -34,7 +34,7 @@ class GameController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
     
     private var initialCoins = [String]()
     private var caughtCoins = [String]()
-    private var timer :Timer!
+    private var timer :Timer?
     private var gameTime = 0 //Seconds
     private var appStorage : IAppStorage!
     private var currentLevel :Int = 0
@@ -78,7 +78,7 @@ class GameController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
         
         // Show statistics such as fps and timing information
         //sceneView.showsStatistics = true
-        sceneView.debugOptions = [ARSCNDebugOptions.showWorldOrigin, ARSCNDebugOptions.showFeaturePoints]
+        //sceneView.debugOptions = [ARSCNDebugOptions.showWorldOrigin, ARSCNDebugOptions.showFeaturePoints]
         
         getInitialGameLevel()
     }
@@ -100,7 +100,7 @@ class GameController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
         
         // Pause the view's session
         sceneView.session.pause()
-        self.timer.invalidate()
+        self.timer?.invalidate()
         
     }
     
@@ -128,6 +128,8 @@ class GameController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
     
     
     private func restartGame() {
+        self.timer?.invalidate()
+
         self.gameTime = self.MAX_GAME_TIME - (self.currentLevel * 10)
         updateTime()
         self.removeAllNodes()
@@ -228,7 +230,7 @@ class GameController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
     }
     
     private func finishGame(success: Bool){
-        self.timer.invalidate()
+        self.timer?.invalidate()
         self.gameTime = 0
         
         if success{
