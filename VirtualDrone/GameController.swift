@@ -170,17 +170,28 @@ class GameController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
         self.initialCoins.removeAll()
         self.caughtCoins.removeAll()
         
+        let pointOfView  = self.getPointOfView()
+        
         for i in 1...numTargets {
             let targetName = "target_\(i)"
-            let positionNode1 : SCNVector3
+            let positionNode : SCNVector3
             
-            if self.currentLevel > 5{
-                positionNode1 = SCNVector3(x: Float.random(in: -1...1), y: Float.random(in: -1...1), z: -2)
+            var zValue : Float = 0
+            if pointOfView.z > 0 {
+                zValue = pointOfView.z + Float.random(in: 1.5...3)
             }else{
-                positionNode1 = SCNVector3(x: Float.random(in: -2...2), y: Float.random(in: -2...2), z: -Float.random(in: 2...4))
+                zValue = pointOfView.z - Float.random(in: 1.5...3)
             }
             
-            let target = TargetNode(positionNode: positionNode1)
+            
+            if self.currentLevel > 5{
+                
+                positionNode = SCNVector3(x: pointOfView.x + Float.random(in: -1...1), y: pointOfView.y + Float.random(in: -1...1), z: zValue)
+            }else{
+                positionNode = SCNVector3(x: pointOfView.x + Float.random(in: -2...2), y: pointOfView.y + Float.random(in: -2...2), z: zValue)
+            }
+            
+            let target = TargetNode(positionNode: positionNode)
             target.name = targetName
             self.sceneView.scene.rootNode.addChildNode(target)
             
