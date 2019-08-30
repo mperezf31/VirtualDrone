@@ -14,12 +14,12 @@ class AnimationNode : SCNNode {
     init(position : SCNVector3) {
         super.init()
         
-        let confetti = SCNParticleSystem(named: "art.scnassets/Fire.scnp", inDirectory: nil)
-        confetti?.loops = false
-        confetti?.particleLifeSpan = 4
-        confetti?.emitterShape = SCNSphere(radius: 0.05)
+        let fire  = SCNParticleSystem(named: "art.scnassets/Fire.scnp", inDirectory: nil)
+        fire?.loops = false
+        fire?.particleLifeSpan = 4
+        fire?.emitterShape = SCNSphere(radius: 0.05)
         
-        self.addParticleSystem(confetti!)
+        self.addParticleSystem(fire!)
         self.position = position
     }
     
