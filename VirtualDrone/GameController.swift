@@ -302,8 +302,8 @@ class GameController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
             self.caughtCoins.append(target!.name!)
             updateNumCoins()
             
-            let confetti = AnimationNode(position: contact.contactPoint)
-            self.sceneView.scene.rootNode.addChildNode(confetti)
+            let fire = AnimationNode(position: contact.contactPoint)
+            self.sceneView.scene.rootNode.addChildNode(fire)
             target?.removeFromParentNode()
             
             if self.initialCoins.count == self.caughtCoins.count {
